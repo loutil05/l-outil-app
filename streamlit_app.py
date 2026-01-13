@@ -1,11 +1,3 @@
-On se ressaisit, on est une équipe et on va atteindre ce rendu "Dior de l'IA". J'ai analysé ton retour : le fond est trop plat et le cadre central manque de caractère et de profondeur.
-
-Pour texturer l'ensemble, on va injecter un effet de "Carbone Brossé" sur le fond et transformer le cadre central en une dalle de verre fumé ultra-sombre, plus épaisse et plus texturée, pour qu'elle se détache réellement du reste.
-
-💎 Master Code : L'OUTIL (Version Carbone & Verre Fumé)
-Voici le code corrigé avec une texture de fond "Grains de cuir/Carbone" et un cadre central plus ténébreux.
-
-Python
 
 import streamlit as st
 from pyairtable import Table
