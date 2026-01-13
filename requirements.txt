@@ -1,2 +1,6 @@
-streamlit==1.28.0
-pyairtable
+[theme]
+base="dark"
+primaryColor="#D4AF37"
+backgroundColor="#000000"
+secondaryBackgroundColor="#0a0a0a"
+textColor="#FFFFFF"
