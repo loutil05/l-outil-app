@@ -2,66 +2,75 @@ import streamlit as st
 from pyairtable import Table
 import os
 
-# --- CONFIGURATION STRICTE "L'OUTIL" ---
-st.set_page_config(page_title="L'OUTIL - Automation", page_icon="⚡", layout="centered")
+# --- CONFIGURATION STRICTE ---
+st.set_page_config(page_title="L'OUTIL", page_icon="⚡", layout="centered")
 
-# --- DESIGN PREMIUM NOIR & OR ---
+# --- LE VRAI DESIGN "L'OUTIL" (NOIR & OR) ---
 st.markdown("""
     <style>
-    .stApp { background-color: #050505; color: #FFFFFF; }
-    h1 { color: #D4AF37 !important; text-align: center; font-family: 'Impact', sans-serif; letter-spacing: 2px; }
-    .stButton > button { 
-        width: 100%; background: linear-gradient(145deg, #D4AF37, #AA8A2E); 
-        color: black; font-weight: bold; border: none; height: 50px; border-radius: 5px;
+    /* Fond Noir Intégral */
+    .stApp {
+        background-color: #000000 !important;
     }
-    .stTextInput > div > div > input, .stSelectbox > div > div > div {
-        background-color: #1A1A1A !input; border: 1px solid #D4AF37 !important; color: white !important;
+    /* Titre en Or Massif */
+    .gold-title {
+        color: #D4AF37 !important;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 3.5rem !important;
+        font-weight: 800;
+        text-align: center;
+        text-transform: uppercase;
+        margin-bottom: 0px;
+        letter-spacing: -2px;
     }
+    /* Input design */
+    .stTextInput > div > div > input {
+        background-color: #111 !important;
+        color: white !important;
+        border: 1px solid #D4AF37 !important;
+        border-radius: 0px !important;
+    }
+    /* Bouton Or */
+    .stButton > button {
+        width: 100%;
+        background-color: #D4AF37 !important;
+        color: black !important;
+        font-weight: bold !important;
+        border: none !important;
+        border-radius: 0px !important;
+        height: 60px !important;
+        font-size: 1.2rem !important;
+    }
+    /* Masquer les menus Streamlit */
+    #MainMenu, footer, header {visibility: hidden;}
     </style>
+    <h1 class="gold-title">L'OUTIL</h1>
+    <p style='text-align: center; color: #D4AF37; font-weight: 300; margin-top: -10px;'>SYSTÈME DE COMMANDE PRIVÉ</p>
     """, unsafe_allow_html=True)
 
-st.title("⚡ L'OUTIL : SYSTÈME DE COMMANDE")
-st.markdown("<p style='text-align: center; color: #888;'>Ne réfléchis plus. Commande. Encaisse.</p>", unsafe_allow_html=True)
+# --- CONNEXION AIRTABLE ---
+try:
+    api_key = st.secrets["AIRTABLE_API_KEY"]
+    base_id = st.secrets["AIRTABLE_BASE_ID"]
+    table = Table(api_key, base_id, "Table 1")
+except Exception as e:
+    st.error("En attente de configuration Airtable...")
 
-# --- FORMULAIRE DE COMMANDE ---
+# --- INTERFACE ---
 with st.container():
-    sujet = st.text_input("SUJET DU POST", placeholder="Ex: Pourquoi l'IA va remplacer les freelances...")
+    st.write("---")
+    sujet = st.text_input("SUJET DU POST", placeholder="Tape ton idée ici...")
     
     col1, col2 = st.columns(2)
     with col1:
-        format_type = st.selectbox("FORMAT", ["Réel Viral", "Carrousel Stratégique", "Story de Vente"])
+        format_type = st.selectbox("FORMAT", ["Réel Viral", "Carrousel Stratégique", "Story"])
     with col2:
-        tonalite = st.selectbox("TONALITÉ", ["Arrogant & Direct", "Expert / Éducatif", "Aggressif"])
+        tonalite = st.selectbox("TONALITÉ", ["Arrogant", "Expert", "Agressif"])
 
-    # --- CONNEXION AIRTABLE ---
-    # Ces champs seront remplis par tes "Secrets" dans Streamlit pour la sécurité
-    try:
-        api_key = st.secrets["AIRTABLE_API_KEY"]
-        base_id = st.secrets["AIRTABLE_BASE_ID"]
-        table_name = "Table 1"
-        table = Table(api_key, base_id, table_name)
-    except:
-        st.warning("🔗 Connexion Airtable en attente des clés de sécurité.")
-
-    if st.button("LANCER LA GÉNÉRATION & ENVOYER"):
-        if not sujet:
-            st.error("Précise un sujet pour l'outil.")
+    if st.button("LANCER LA GÉNÉRATION"):
+        if sujet:
+            with st.spinner("Transmission..."):
+                table.create({"Sujet": sujet, "Format": format_type, "Ton": tonalite})
+                st.success("ENVOYÉ DANS AIRTABLE.")
         else:
-            with st.spinner("L'IA travaille pour toi..."):
-                # Simulation de la data prête à l'envoi
-                data = {
-                    "Sujet": sujet,
-                    "Format": format_type,
-                    "Ton": tonalite,
-                    "Status": "À Publier"
-                }
-                
-                try:
-                    table.create(data)
-                    st.success(f"✅ COMMANDE ENREGISTRÉE DANS AIRTABLE. Va tourner ton contenu.")
-                    st.balloons()
-                except Exception as e:
-                    st.error(f"Erreur d'envoi : {e}. Vérifie tes IDs Airtable.")
-
-st.divider()
-st.markdown("<p style='text-align: center; font-size: 0.8em;'>Propriété exclusive de L'OUTIL. Utilisation restreinte.</p>", unsafe_allow_html=True)
+            st.warning("Précise un sujet.")
