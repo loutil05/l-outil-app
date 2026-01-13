@@ -1,20 +1,19 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. SETUP DE LA PAGE
+# 1. ARCHITECTURE TECHNIQUE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : EFFET CRISTAL & OR
-# Cette partie définit l'aspect visuel de l'Image 2
+# 2. INJECTION CSS : "CRISTAL & OR" (ZÉRO BLOC BLANC)
 st.markdown("""
 <style>
-    /* Fond Noir Profond */
+    /* 1. Fond Noir Absolu */
     .stApp {
         background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%) !important;
     }
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* TITRE SIGNATURE OR */
+    /* 2. TITRE SIGNATURE OR (Image 2) */
     .brand-header {
         color: #D4AF37 !important;
         text-align: center;
@@ -26,51 +25,53 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
 
-    /* LE CADRE "PROTOCOL" EN VERRE (IMAGE 2) */
-    /* On cible le conteneur principal pour lui donner de la profondeur */
+    /* 3. LE CADRE "PROTOCOL" (L'effet de l'Image 2) */
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
-        background: rgba(255, 255, 255, 0.02) !important;
-        backdrop-filter: blur(20px) !important; /* L'effet de flou qui fait le verre */
-        border: 1px solid rgba(212, 175, 55, 0.15) !important;
+        background: rgba(255, 255, 255, 0.01) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(212, 175, 55, 0.1) !important;
         padding: 60px !important;
         border-radius: 4px !important;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
     }
 
-    /* LES INPUTS : EFFET PLAQUE DE VERRE POLI */
-    /* Correction des blocs blancs vus sur les Images 9, 10, 14, 15 */
-    div[data-baseweb="input"], div[data-baseweb="select"] {
-        background-color: rgba(255, 255, 255, 0.04) !important;
-        backdrop-filter: blur(12px) !important;
-        border: 1px solid rgba(212, 175, 55, 0.1) !important;
+    /* 4. TRANSFORMATION DES CASES EN "MORCEAUX DE VERRE" */
+    /* On cible les div internes pour supprimer le blanc/gris par défaut */
+    div[data-baseweb="input"], 
+    div[data-baseweb="select"], 
+    div[data-baseweb="base-input"] {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(15px) !important; /* L'effet verre poli */
+        border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Bordure fine cristal */
+        border-bottom: 2px solid rgba(212, 175, 55, 0.3) !important; /* Ligne de base Or */
         border-radius: 2px !important;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: all 0.4s ease !important;
     }
 
-    /* Suppression des fonds par défaut de Streamlit */
-    input, .stSelectbox div[data-baseweb="select"] {
+    /* On force l'input à être invisible pour laisser voir le verre */
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
+        background-color: transparent !important;
         color: white !important;
         font-weight: 200 !important;
-        background-color: transparent !important;
+        border: none !important;
     }
     
-    /* Effet d'illumination au clic */
+    /* Effet "Focus" : Le verre s'illumine au clic */
     div[data-baseweb="input"]:focus-within, div[data-baseweb="select"]:focus-within {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        border: 1px solid rgba(212, 175, 55, 0.5) !important;
-        box-shadow: 0 0 20px rgba(212, 175, 55, 0.1) !important;
+        background-color: rgba(255, 255, 255, 0.07) !important;
+        border-bottom: 2px solid #D4AF37 !important;
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.15) !important;
     }
 
-    /* Labels (Titre des cases) */
+    /* Labels dorés discrets */
     label p {
         color: rgba(212, 175, 55, 0.7) !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         letter-spacing: 3px !important;
         text-transform: uppercase;
         margin-bottom: 12px !important;
     }
 
-    /* BOUTON EXECUTE (STYLE TERMINAL) */
+    /* 5. BOUTON EXECUTE (IMAGE 2) */
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
@@ -82,10 +83,10 @@ st.markdown("""
         font-weight: 100;
         margin-top: 35px;
         text-transform: uppercase;
-        transition: 0.5s ease-in-out;
+        transition: 0.5s ease;
     }
     div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.1) !important;
+        background-color: rgba(212, 175, 55, 0.08) !important;
         box-shadow: 0px 0px 40px rgba(212, 175, 55, 0.2);
         border-color: #FFD700 !important;
     }
@@ -101,7 +102,7 @@ try:
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
 except Exception:
-    st.error("Configuration Requise.")
+    st.error("Protocol Error: Check Secrets.")
 
 # 4. INTERFACE DE COMMANDE
 with st.container():
