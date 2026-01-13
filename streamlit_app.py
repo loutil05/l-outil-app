@@ -1,15 +1,15 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. ARCHITECTURE DE LA PAGE
+# 1. CONFIGURATION DE LA PAGE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : ÉQUILIBRE LUXE & SYMÉTRIE CHIRURGICALE
+# 2. INJECTION CSS : ESPACEMENT DES BULLES & DESIGN LUXE
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&display=swap');
 
-    /* 1. FOND ET CENTRAGE VERTICAL/HORIZONTAL TOTAL */
+    /* FOND ET CENTRAGE GLOBAL */
     .stApp {
         background-color: #020202 !important;
         background-image: radial-gradient(rgba(212, 175, 55, 0.05) 1.5px, transparent 0) !important;
@@ -28,7 +28,7 @@ st.markdown("""
     
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* 2. LOGO AVEC HALO DORÉ */
+    /* LOGO AVEC HALO DORÉ */
     .brand-header {
         text-align: center !important;
         letter-spacing: 15px;
@@ -44,22 +44,22 @@ st.markdown("""
         width: 100% !important;
     }
 
-    /* LE SOUS-TITRE (C'EST LUI QUI DESCEND TOUT LE RESTE) */
+    /* LE SOUS-TITRE */
     .brand-subtitle {
         text-align: center; 
         color: rgba(212,175,55,0.4); 
         letter-spacing: 8px; 
         font-size: 10px; 
         text-transform: uppercase; 
-        margin-top: 15px !important; /* Espace sous le NOM */
-        margin-bottom: 50px !important; /* DESCEND TOUT LE BLOC EN DESSOUS */
+        margin-top: 15px !important;
+        margin-bottom: 45px !important; /* Descente du bloc pour l'équilibre */
     }
 
-    /* 3. LE CADRE CENTRAL (SYMÉTRIE ET COMPACITÉ) */
+    /* --- LE FIX DU DÉCALAGE ET DE L'ESPACEMENT --- */
     [data-testid="stVerticalBlock"] {
         align-items: center !important;
         width: 100% !important;
-        gap: 0px !important;
+        gap: 25px !important; /* CRÉE L'ESPACE VERTICAL ENTRE LES BULLES */
     }
 
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
@@ -67,7 +67,7 @@ st.markdown("""
         background: rgba(10, 10, 10, 0.9) !important;
         -webkit-backdrop-filter: blur(30px) !important;
         backdrop-filter: blur(30px) !important;
-        padding: clamp(20px, 5vw, 45px) !important;
+        padding: clamp(25px, 5vw, 50px) !important;
         border-radius: 25px !important;
         margin: 0 auto !important;
         width: 95% !important;
@@ -75,7 +75,7 @@ st.markdown("""
         box-shadow: 0 40px 120px rgba(0, 0, 0, 1);
     }
 
-    /* CASES BULLES ÉLARGIES */
+    /* --- DESIGN DES BULLES (PILLS) --- */
     .stTextInput div, .stSelectbox div, [data-baseweb="input"], [data-baseweb="select"] {
         background-color: transparent !important;
         border: none !important;
@@ -88,6 +88,12 @@ st.markdown("""
         height: 65px !important;
     }
 
+    /* ESPACE HORIZONTAL ENTRE LES DEUX BULLES DU BAS */
+    [data-testid="column"] {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
     input, .stSelectbox span {
         color: #D4AF37 !important;
         -webkit-text-fill-color: #D4AF37 !important;
@@ -96,12 +102,12 @@ st.markdown("""
         font-size: 18px !important;
     }
 
-    /* 4. BOUTON (REMONTÉ PRÈS DU CADRE) */
+    /* BOUTON (COLLÉ À LA BASE DU CADRE) */
     div.stButton {
         display: flex !important;
         justify-content: center !important;
         width: 100% !important;
-        margin-top: 10px !important; /* REMONTE LE BOUTON PRÈS DU RESTE */
+        margin-top: 10px !important; 
     }
     div.stButton > button {
         background-color: transparent !important;
@@ -122,14 +128,13 @@ st.markdown("""
         box-shadow: 0px 0px 40px rgba(212, 175, 55, 0.5);
     }
 
-    /* LABELS DISCRETS */
     label p {
         color: rgba(212, 175, 55, 0.8) !important;
         font-size: 11px !important;
         letter-spacing: 4px !important;
         text-transform: uppercase;
         text-align: center !important;
-        margin-bottom: 5px !important;
+        margin-bottom: 10px !important;
     }
 </style>
 
