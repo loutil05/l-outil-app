@@ -1,19 +1,25 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. ARCHITECTURE DE LA PAGE
+# 1. CONFIGURATION
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS "ULTRA-GLASS" (ZÉRO BLOC BLANC)
+# 2. INJECTION CSS : TEXTURE NOIRE & VERRE POLI
 st.markdown("""
 <style>
-    /* 1. FOND NOIR RADIAL */
+    /* FOND TEXTURÉ NOIR MAT (Fini le rond blanc) */
     .stApp {
-        background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%) !important;
+        background-color: #050505 !important;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.05) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(20, 20, 20, 1) 0px, transparent 50%) !important;
+        /* Ajout d'un grain subtil pour la texture */
+        background-attachment: fixed;
     }
+    
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* 2. TITRE SIGNATURE OR (IMAGE 2) */
+    /* TITRE SIGNATURE OR (IMAGE 2) */
     .brand-header {
         color: #D4AF37 !important;
         text-align: center;
@@ -23,66 +29,63 @@ st.markdown("""
         text-transform: uppercase;
         margin-top: 50px;
         font-family: 'Inter', sans-serif;
-        text-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
     }
 
-    /* 3. LE CADRE CENTRAL PROTOCOL */
+    /* LE CADRE CENTRAL PROTOCOL */
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
-        border: 1px solid rgba(212, 175, 55, 0.1) !important;
-        background: rgba(255, 255, 255, 0.01) !important;
-        backdrop-filter: blur(25px) !important;
+        border: 1px solid rgba(212, 175, 55, 0.08) !important;
+        background: rgba(10, 10, 10, 0.4) !important;
+        backdrop-filter: blur(30px) !important;
         padding: 60px !important;
         border-radius: 4px !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9) !important;
     }
 
-    /* --- EFFET "MORCEAU DE VERRE" DÉFINITIF --- */
+    /* --- EFFET "VRAI MORCEAU DE VERRE" --- */
     
-    /* On nettoie les fonds Streamlit par défaut */
     .stTextInput div, .stSelectbox div, div[data-baseweb="input"], div[data-baseweb="select"] {
         background-color: transparent !important;
         border: none !important;
     }
 
-    /* On crée la plaque de verre avec reflets spéculaires */
+    /* Plaque de verre avec reflets spéculaires acérés */
     .stTextInput > div > div, .stSelectbox > div > div {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+        background: rgba(255, 255, 255, 0.02) !important;
         backdrop-filter: blur(15px) !important;
         
-        /* Reflet de lumière sur les arêtes (Effet Cristal) */
-        border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-bottom: 2px solid rgba(212, 175, 55, 0.3) !important;
+        /* Arêtes de cristal (Image 2) */
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-bottom: 1.5px solid rgba(212, 175, 55, 0.2) !important;
         
         border-radius: 2px !important;
         height: 48px !important;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: all 0.4s ease-in-out;
     }
 
-    /* Texte & Curseur */
+    /* Texte & Placeholder */
     input, .stSelectbox div[data-baseweb="select"] span {
-        color: #FFFFFF !important;
+        color: rgba(255, 255, 255, 0.9) !important;
         font-weight: 200 !important;
-        font-family: 'Inter', sans-serif !important;
     }
     
-    /* Interaction : Le verre s'illumine */
+    /* Interaction : Le verre capte la lumière */
     div[data-baseweb="input"]:focus-within, div[data-baseweb="select"]:focus-within {
-        background: rgba(255, 255, 255, 0.08) !important;
-        border-bottom: 2px solid #D4AF37 !important;
-        box-shadow: 0 0 25px rgba(212, 175, 55, 0.2) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-bottom: 2.5px solid #D4AF37 !important;
+        box-shadow: 0 0 30px rgba(212, 175, 55, 0.1) !important;
     }
 
-    /* Labels Dorés Stratégiques */
+    /* Labels Dorés */
     label p {
-        color: rgba(212, 175, 55, 0.8) !important;
-        font-size: 11px !important;
+        color: rgba(212, 175, 55, 0.7) !important;
+        font-size: 10px !important;
         letter-spacing: 4px !important;
         text-transform: uppercase;
         margin-bottom: 12px !important;
     }
 
-    /* BOUTON EXECUTE (STYLE TERMINAL DE LUXE) */
+    /* BOUTON EXECUTE */
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
@@ -97,8 +100,8 @@ st.markdown("""
         transition: 0.6s all ease;
     }
     div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.1) !important;
-        box-shadow: 0px 0px 40px rgba(212, 175, 55, 0.2);
+        background-color: rgba(212, 175, 55, 0.05) !important;
+        box-shadow: 0px 0px 50px rgba(212, 175, 55, 0.15);
         border: 1px solid #FFD700 !important;
     }
 </style>
