@@ -1,19 +1,19 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. ARCHITECTURE DE LA PAGE
+# 1. CONFIGURATION DE LA PAGE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : "HAUTE-COUTURE" (EFFET VERRE ET OR)
+# 2. INJECTION CSS : EFFET CRISTAL & OR (VERSION FINALE)
 st.markdown("""
 <style>
-    /* Fond Noir & Suppression des éléments par défaut */
+    /* Fond Noir Profond avec dégradé radial pour la profondeur */
     .stApp {
         background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%) !important;
     }
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* TITRE SIGNATURE OR (Image 2) */
+    /* TITRE SIGNATURE OR (IMAGE 2) */
     .brand-header {
         color: #D4AF37 !important;
         text-align: center;
@@ -25,28 +25,29 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
 
-    /* --- EFFET "MORCEAU DE VERRE" SUR LE CADRE CENTRAL --- */
+    /* LE CADRE "PROTOCOL" CENTRAL */
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
-        background: rgba(255, 255, 255, 0.015) !important;
-        backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(212, 175, 55, 0.1) !important;
+        background: rgba(255, 255, 255, 0.01) !important;
+        backdrop-filter: blur(25px) !important;
         padding: 60px !important;
-        border-radius: 2px !important;
+        border-radius: 4px !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
     }
 
-    /* --- TRANSFORMATION DES CASES EN PLAQUES DE VERRE --- */
-    /* On cible les éléments internes de Streamlit pour supprimer le gris/blanc */
+    /* --- EFFET "MORCEAU DE VERRE" SUR LES CASES --- */
+    /* On cible les éléments internes pour supprimer les styles standard */
     div[data-baseweb="input"], div[data-baseweb="select"] {
-        background: rgba(255, 255, 255, 0.04) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
         backdrop-filter: blur(15px) !important; /* L'effet verre poli */
         
-        /* Reflet de lumière sur les arêtes pour l'effet "cristal" */
+        /* Arêtes spéculaires : reflet de lumière sur le bord supérieur */
         border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-bottom: 1px solid rgba(212, 175, 55, 0.3) !important;
         border-right: 1px solid rgba(212, 175, 55, 0.15) !important;
         
-        border-radius: 0px !important;
+        border-radius: 2px !important;
         padding: 5px !important;
         transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
     }
@@ -60,7 +61,7 @@ st.markdown("""
         font-size: 15px !important;
     }
     
-    /* Focus : La dalle de verre s'illumine au clic */
+    /* Illumination au Focus (La plaque s'active) */
     div[data-baseweb="input"]:focus-within, div[data-baseweb="select"]:focus-within {
         background: rgba(255, 255, 255, 0.08) !important;
         border-bottom: 2px solid #D4AF37 !important;
@@ -70,13 +71,13 @@ st.markdown("""
     /* Labels dorés discrets */
     label p {
         color: rgba(212, 175, 55, 0.7) !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
         letter-spacing: 3px !important;
         text-transform: uppercase;
         margin-bottom: 12px !important;
     }
 
-    /* BOUTON EXECUTE (Style Image 2) */
+    /* BOUTON EXECUTE (IMAGE 2) */
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
@@ -103,12 +104,12 @@ st.markdown("""
 
 # 3. LOGIQUE TECHNIQUE
 try:
-    # Airtable Base ID direct : appRGyGPT4atazrpx
+    # Airtable Base ID : appRGyGPT4atazrpx
     api_key = st.secrets["AIRTABLE_API_KEY"]
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
 except Exception:
-    st.error("Configuration Requise.")
+    st.error("Protocol Configuration Required.")
 
 # 4. INTERFACE DE COMMANDE
 with st.container():
