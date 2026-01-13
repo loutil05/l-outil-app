@@ -1,116 +1,128 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. INITIALISATION TECHNIQUE
+# 1. SETUP STABILITÉ
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : MINIMALISME ABSOLU & OR PUR
+# 2. INJECTION CSS : CADRE GLASS & INPUTS BULLES
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&display=swap');
 
-    /* 1. FOND NOIR TOTAL ET TEXTURE CARBONE */
+    /* FOND NOIR MAT TEXTURÉ */
     .stApp {
-        background-color: #000000 !important;
+        background-color: #020202 !important;
         background-image: radial-gradient(rgba(212, 175, 55, 0.05) 1.5px, transparent 0) !important;
-        background-size: 30px 30px !important;
+        background-size: 25px 25px !important;
         font-family: 'Inter', sans-serif !important;
     }
     
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* 2. LOGO "SIGNATURE" AVEC HALO INTENSE */
+    /* LOGO AVEC HALO DORÉ INTENSE (RESTAURÉ) */
     .brand-header {
         text-align: center;
-        letter-spacing: 25px;
-        font-size: clamp(32px, 12vw, 55px);
-        font-weight: 100;
+        letter-spacing: 15px;
+        font-size: clamp(30px, 10vw, 48px);
+        font-weight: 200;
         text-transform: uppercase;
-        margin-top: 80px;
-        color: #D4AF37 !important;
+        margin-top: 40px;
+        background: linear-gradient(to bottom, #FFD700, #D4AF37);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         text-shadow: 
-            0 0 15px rgba(212, 175, 55, 0.6),
-            0 0 30px rgba(212, 175, 55, 0.2);
+            0 0 10px rgba(255, 215, 0, 0.7),
+            0 0 20px rgba(212, 175, 55, 0.5),
+            0 0 40px rgba(212, 175, 55, 0.3);
         width: 100%;
     }
 
-    /* 3. STRUCTURE MINIMALISTE (ZÉRO TABLEAU, ZÉRO ARRONDIS) */
-    /* On rend le container totalement invisible */
-    [data-testid="stVerticalBlock"] > div {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+    /* LE CADRE CENTRAL (VERRE FUMÉ RESTAURÉ) */
+    [data-testid="stVerticalBlock"] > div:nth-child(2) {
+        border: 1px solid rgba(212, 175, 55, 0.15) !important;
+        background: rgba(10, 10, 10, 0.85) !important;
+        -webkit-backdrop-filter: blur(30px) !important;
+        backdrop-filter: blur(30px) !important;
+        padding: clamp(30px, 5vw, 60px) !important;
+        border-radius: 20px !important; /* Cadre légèrement arrondi pour l'harmonie */
+        margin: 0 auto !important;
+        width: 100% !important;
+        max-width: 650px !important;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 1);
     }
 
-    /* 4. LES ENTRÉES : LIGNES D'OR ÉPURÉES */
+    /* --- MODE BULLES POUR LES CASES --- */
     .stTextInput div, .stSelectbox div, [data-baseweb="input"], [data-baseweb="select"] {
         background-color: transparent !important;
         border: none !important;
     }
 
-    /* Suppression des bordures de boîtes pour un look "Ligne" */
+    /* Transformation en Bulles (Pills) */
     .stTextInput > div > div, .stSelectbox > div > div {
-        background: transparent !important;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.4) !important;
-        border-radius: 0px !important;
-        height: 50px !important;
-        transition: 0.8s all cubic-bezier(0.19, 1, 0.22, 1);
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(212, 175, 55, 0.3) !important;
+        border-radius: 50px !important; /* EFFET BULLE */
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        height: 55px !important;
+        transition: 0.4s all ease;
     }
 
-    /* Interaction : La ligne s'illumine */
+    /* Focus : La bulle s'illumine */
     div[data-baseweb="input"]:focus-within, div[data-baseweb="select"]:focus-within {
-        border-bottom: 1px solid #FFD700 !important;
-        box-shadow: 0 10px 20px -10px rgba(212, 175, 55, 0.3) !important;
+        border: 1px solid #D4AF37 !important;
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.2) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
     }
 
-    /* STYLE DU TEXTE (OR ET FINESSE) */
+    /* Style du texte Or */
     input, .stSelectbox span {
         color: #D4AF37 !important;
         -webkit-text-fill-color: #D4AF37 !important;
-        font-weight: 200 !important;
-        font-size: 17px !important;
-        letter-spacing: 2px !important;
-        text-align: center !important; /* Texte centré pour l'harmonie */
+        font-weight: 300 !important;
+        font-size: 15px !important;
+        letter-spacing: 1px !important;
     }
 
-    /* 5. BOUTON : LA BARRE DE COMMANDE */
+    /* BOUTON INITIALISER (STYLE BULLE ÉTIREÉ) */
     div.stButton {
         display: flex;
         justify-content: center;
-        margin-top: 60px;
+        margin-top: 40px;
     }
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
         border: 1px solid #D4AF37 !important;
-        border-radius: 0px !important;
+        border-radius: 50px !important; /* EFFET BULLE */
         width: 100% !important;
-        max-width: 400px !important;
-        height: 70px !important;
-        letter-spacing: 12px;
-        font-weight: 100;
+        max-width: 350px !important;
+        height: 65px !important;
+        letter-spacing: 8px;
+        font-weight: 200;
         text-transform: uppercase;
-        transition: 1s all ease;
+        transition: 0.5s all;
     }
     div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.05) !important;
-        letter-spacing: 15px;
-        box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+        background-color: #D4AF37 !important;
+        color: black !important;
+        box-shadow: 0px 0px 30px rgba(212, 175, 55, 0.4);
     }
 
-    /* LABELS (MICRO-TYPOGRAPHIE) */
+    /* Labels Dorés Centrés */
     label p {
-        color: rgba(212, 175, 55, 0.5) !important;
-        font-size: 9px !important;
-        letter-spacing: 5px !important;
+        color: rgba(212, 175, 55, 0.8) !important;
+        font-size: 10px !important;
+        letter-spacing: 4px !important;
         text-transform: uppercase;
         text-align: center !important;
-        margin-bottom: 20px !important;
+        width: 100%;
+        margin-bottom: 10px !important;
     }
 </style>
 
 <div class="brand-header">L'OUTIL</div>
-<p style="text-align:center; color:rgba(212,175,55,0.3); letter-spacing:10px; font-size:9px; text-transform:uppercase; margin-bottom: 60px;">Protocol Interface v1.0</p>
+<p style="text-align:center; color:rgba(212,175,55,0.4); letter-spacing:8px; font-size:10px; text-transform:uppercase; margin-bottom: 40px;">AI Command Protocol</p>
 """, unsafe_allow_html=True)
 
 # 3. LOGIQUE TECHNIQUE
@@ -119,11 +131,11 @@ try:
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
 except:
-    st.error("SYSTEM_OFFLINE_ERR")
+    st.error("Protocol Connection Required.")
 
-# 4. INTERFACE HARMONISÉE
+# 4. INTERFACE
 with st.container():
-    sujet = st.text_input("SUJET", placeholder="INPUT_STRATEGY")
+    sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE STRATÉGIQUE...")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -135,8 +147,8 @@ with st.container():
         if sujet:
             try:
                 table.create({"Sujet": sujet, "Format": fmt, "Ton": ton})
-                st.toast("DATA_TRANSMITTED", icon='✅')
+                st.toast("PROTOCOL EXECUTED", icon='✅')
             except:
-                st.error("CONNECTION_LOST")
+                st.error("Airtable Link Error")
         else:
-            st.warning("FIELD_REQUIRED")
+            st.warning("INPUT REQUIRED")
