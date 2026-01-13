@@ -1,53 +1,58 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. ARCHITECTURE TECHNIQUE
+# 1. SETUP DE LA PAGE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : "CRISTAL & OR" (ZÉRO BLOC BLANC)
+# 2. INJECTION CSS : "HAUTE-HORLOGERIE" (VERRE & OR)
 st.markdown("""
 <style>
-    /* 1. Fond Noir Absolu */
+    /* Fond Noir & Suppression Interface */
     .stApp {
         background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%) !important;
     }
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* 2. TITRE SIGNATURE OR (Image 2) */
+    /* TITRE SIGNATURE OR (IMAGE 2) */
     .brand-header {
         color: #D4AF37 !important;
         text-align: center;
-        letter-spacing: 18px;
-        font-size: 42px;
+        letter-spacing: 20px;
+        font-size: 45px;
         font-weight: 100;
         text-transform: uppercase;
-        margin-top: 40px;
+        margin-top: 50px;
         font-family: 'Inter', sans-serif;
     }
 
-    /* 3. LE CADRE "PROTOCOL" (L'effet de l'Image 2) */
+    /* LE CADRE "PROTOCOL" CENTRAL */
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
+        border: 1px solid rgba(212, 175, 55, 0.1) !important;
         background: rgba(255, 255, 255, 0.01) !important;
         backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(212, 175, 55, 0.1) !important;
         padding: 60px !important;
         border-radius: 4px !important;
     }
 
-    /* 4. TRANSFORMATION DES CASES EN "MORCEAUX DE VERRE" */
-    /* On cible les div internes pour supprimer le blanc/gris par défaut */
-    div[data-baseweb="input"], 
-    div[data-baseweb="select"], 
-    div[data-baseweb="base-input"] {
-        background-color: rgba(255, 255, 255, 0.03) !important;
+    /* --- TRANSFORMATION DES CASES EN "PLAQUES DE VERRE" --- */
+    
+    /* Ciblage chirurgical des blocs Streamlit */
+    div[data-baseweb="input"], div[data-baseweb="select"] {
+        background: rgba(255, 255, 255, 0.03) !important;
         backdrop-filter: blur(15px) !important; /* L'effet verre poli */
-        border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Bordure fine cristal */
-        border-bottom: 2px solid rgba(212, 175, 55, 0.3) !important; /* Ligne de base Or */
-        border-radius: 2px !important;
-        transition: all 0.4s ease !important;
+        
+        /* Reflet de lumière sur les arêtes (Image 2) */
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
+        border-right: 1px solid rgba(212, 175, 55, 0.1) !important;
+        
+        border-radius: 0px !important;
+        padding: 5px !important;
+        transition: all 0.4s ease-out !important;
     }
 
-    /* On force l'input à être invisible pour laisser voir le verre */
+    /* Suppression totale du blanc/gris interne */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] {
         background-color: transparent !important;
         color: white !important;
@@ -55,11 +60,11 @@ st.markdown("""
         border: none !important;
     }
     
-    /* Effet "Focus" : Le verre s'illumine au clic */
+    /* Effet "Focus" : La dalle de verre s'active */
     div[data-baseweb="input"]:focus-within, div[data-baseweb="select"]:focus-within {
-        background-color: rgba(255, 255, 255, 0.07) !important;
-        border-bottom: 2px solid #D4AF37 !important;
-        box-shadow: 0 0 20px rgba(212, 175, 55, 0.15) !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-bottom: 1px solid #D4AF37 !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
     }
 
     /* Labels dorés discrets */
@@ -71,7 +76,7 @@ st.markdown("""
         margin-bottom: 12px !important;
     }
 
-    /* 5. BOUTON EXECUTE (IMAGE 2) */
+    /* BOUTON EXECUTE (IMAGE 2) */
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
@@ -83,7 +88,7 @@ st.markdown("""
         font-weight: 100;
         margin-top: 35px;
         text-transform: uppercase;
-        transition: 0.5s ease;
+        transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
     }
     div.stButton > button:hover {
         background-color: rgba(212, 175, 55, 0.08) !important;
