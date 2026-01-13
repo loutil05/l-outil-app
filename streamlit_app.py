@@ -1,8 +1,3 @@
-Voici le code final complet, prêt à être copié-collé dans ton fichier streamlit_app.py.
-
-J'ai supprimé tout ce qui polluait le design (blocs blancs, gris, bordures par défaut) pour ne garder que l'esthétique "AI Command Protocol" : du noir pur, des lignes dorées ultra-fines et une typographie aérée comme dans l'image que tu as validée.
-
-Python
 
 import streamlit as st
 from pyairtable import Table
