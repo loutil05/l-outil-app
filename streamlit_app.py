@@ -1,19 +1,19 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. ARCHITECTURE DE LUXE
+# 1. ARCHITECTURE DE LA PAGE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS "GLASSMORPHISM" (MÉTHODE CHIRURGICALE)
+# 2. INJECTION CSS "ULTRA-GLASS" (ZÉRO BLOC BLANC)
 st.markdown("""
 <style>
-    /* 1. FOND NOIR PUR */
+    /* 1. FOND NOIR RADIAL */
     .stApp {
         background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%) !important;
     }
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* 2. TITRE SIGNATURE OR (Image 2) */
+    /* 2. TITRE SIGNATURE OR (IMAGE 2) */
     .brand-header {
         color: #D4AF37 !important;
         text-align: center;
@@ -23,6 +23,7 @@ st.markdown("""
         text-transform: uppercase;
         margin-top: 50px;
         font-family: 'Inter', sans-serif;
+        text-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
     }
 
     /* 3. LE CADRE CENTRAL PROTOCOL */
@@ -32,56 +33,56 @@ st.markdown("""
         backdrop-filter: blur(25px) !important;
         padding: 60px !important;
         border-radius: 4px !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
     }
 
-    /* --- TRANSFORMATION DES CASES EN MORCEAUX DE VERRE --- */
+    /* --- EFFET "MORCEAU DE VERRE" DÉFINITIF --- */
     
-    /* On force la transparence de TOUS les blocs Streamlit */
+    /* On nettoie les fonds Streamlit par défaut */
     .stTextInput div, .stSelectbox div, div[data-baseweb="input"], div[data-baseweb="select"] {
         background-color: transparent !important;
         border: none !important;
     }
 
-    /* On crée la plaque de verre sur la couche de saisie */
+    /* On crée la plaque de verre avec reflets spéculaires */
     .stTextInput > div > div, .stSelectbox > div > div {
-        background: rgba(255, 255, 255, 0.04) !important; /* Transparence cristal */
-        backdrop-filter: blur(15px) !important; /* Effet de profondeur */
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%) !important;
+        backdrop-filter: blur(15px) !important;
         
-        /* Reflet de lumière "Haute-Horlogerie" (Arête supérieure) */
+        /* Reflet de lumière sur les arêtes (Effet Cristal) */
         border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
-        
-        /* Signature Or sur le bas */
         border-bottom: 2px solid rgba(212, 175, 55, 0.3) !important;
-        border-radius: 2px !important;
         
-        height: 45px !important;
+        border-radius: 2px !important;
+        height: 48px !important;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
-    /* Texte en Blanc Pur & Fin */
+    /* Texte & Curseur */
     input, .stSelectbox div[data-baseweb="select"] span {
-        color: white !important;
+        color: #FFFFFF !important;
         font-weight: 200 !important;
-        background-color: transparent !important;
+        font-family: 'Inter', sans-serif !important;
     }
     
-    /* Effet d'activation : Le verre s'illumine (Image 2) */
+    /* Interaction : Le verre s'illumine */
     div[data-baseweb="input"]:focus-within, div[data-baseweb="select"]:focus-within {
         background: rgba(255, 255, 255, 0.08) !important;
         border-bottom: 2px solid #D4AF37 !important;
-        box-shadow: 0 0 20px rgba(212, 175, 55, 0.2) !important;
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.2) !important;
     }
 
-    /* Labels Dorés */
+    /* Labels Dorés Stratégiques */
     label p {
         color: rgba(212, 175, 55, 0.8) !important;
         font-size: 11px !important;
-        letter-spacing: 3px !important;
+        letter-spacing: 4px !important;
         text-transform: uppercase;
         margin-bottom: 12px !important;
     }
 
-    /* BOUTON EXECUTE */
+    /* BOUTON EXECUTE (STYLE TERMINAL DE LUXE) */
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
@@ -93,11 +94,12 @@ st.markdown("""
         font-weight: 100;
         margin-top: 40px;
         text-transform: uppercase;
-        transition: 0.5s ease-in-out;
+        transition: 0.6s all ease;
     }
     div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.08) !important;
+        background-color: rgba(212, 175, 55, 0.1) !important;
         box-shadow: 0px 0px 40px rgba(212, 175, 55, 0.2);
+        border: 1px solid #FFD700 !important;
     }
 </style>
 
@@ -111,7 +113,7 @@ try:
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
 except:
-    st.error("Protocol Configuration Required.")
+    st.error("Protocol Error: Check Secrets.")
 
 # 4. INTERFACE
 with st.container():
