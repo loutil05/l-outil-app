@@ -1,17 +1,16 @@
-
 import streamlit as st
 from pyairtable import Table
 
 # 1. CONFIGURATION DE LA PAGE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. DESIGN PROPRIÉTAIRE (OR & TRANSPARENCE)
+# 2. DESIGN "AI COMMAND PROTOCOL" - ZERO BLOC BLANC
 st.markdown("""
     <style>
-    /* Fond Noir Intégral */
+    /* Fond noir profond */
     .stApp { background-color: #050505 !important; }
     
-    /* Titre OR Signature (Image 2) */
+    /* Titre Signature (Image 2) */
     .brand-header {
         color: #D4AF37;
         text-align: center;
@@ -20,6 +19,7 @@ st.markdown("""
         font-weight: 200;
         margin-top: 50px;
         text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
     }
     .brand-sub {
         color: rgba(212, 175, 55, 0.4);
@@ -30,44 +30,60 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* NETTOYAGE DES BLOCS BLANCS (Correction Image 5, 6, 7) */
+    /* CADRE CENTRAL DORE (L'effet de l'Image 2) */
+    [data-testid="stVerticalBlock"] > div:nth-child(2) {
+        border: 1px solid rgba(212, 175, 55, 0.2) !important;
+        padding: 50px !important;
+        background: rgba(255, 255, 255, 0.01) !important;
+        backdrop-filter: blur(10px);
+        border-radius: 2px;
+    }
+
+    /* SUPPRESSION RADICALE DU BLANC ET DU GRIS (Correction Images 5 à 8) */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] {
         background-color: transparent !important;
         border: none !important;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.3) !important;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.4) !important;
         color: white !important;
         border-radius: 0px !important;
         padding-left: 0px !important;
+        box-shadow: none !important;
     }
     
-    /* Labels dorés et discrets */
+    /* Suppression du fond gris au survol/focus */
+    .stTextInput input:focus, .stSelectbox div[data-baseweb="select"]:focus {
+        border-bottom: 1px solid #D4AF37 !important;
+        background-color: transparent !important;
+    }
+
+    /* Labels dorés fins */
     label p {
-        color: rgba(212, 175, 55, 0.6) !important;
-        font-size: 11px !important;
-        letter-spacing: 2px;
+        color: rgba(212, 175, 55, 0.7) !important;
+        font-size: 10px !important;
+        letter-spacing: 3px;
         text-transform: uppercase;
     }
 
-    /* Bouton EXECUTE (Image 2) */
+    /* Bouton EXECUTE - Lignes Dorées (Image 2) */
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
         border: 1px solid #D4AF37 !important;
         border-radius: 0px !important;
-        width: 100% !important;
-        height: 55px !important;
-        letter-spacing: 8px;
-        font-weight: 200;
-        margin-top: 40px;
+        width: 140px !important;
+        height: 45px !important;
+        letter-spacing: 5px;
+        font-weight: 300;
+        margin-top: 30px;
         text-transform: uppercase;
-        transition: 0.5s ease;
+        transition: 0.4s ease;
     }
     div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.05) !important;
-        box-shadow: 0px 0px 25px rgba(212, 175, 55, 0.2);
+        background-color: rgba(212, 175, 55, 0.1) !important;
+        box-shadow: 0px 0px 20px rgba(212, 175, 55, 0.2);
     }
 
-    /* Masquage des éléments Streamlit */
+    /* Masquer l'interface Streamlit */
     #MainMenu, footer, header {visibility: hidden;}
     </style>
     
@@ -75,37 +91,28 @@ st.markdown("""
     <div class="brand-sub">AI COMMAND PROTOCOL</div>
 """, unsafe_allow_html=True)
 
-# 3. LOGIQUE TECHNIQUE (SÉCURISÉE)
+# 3. LOGIQUE TECHNIQUE
 try:
-    # Rappel : AIRTABLE_BASE_ID doit être "appRGyGPT4atazrpx"
     api_key = st.secrets["AIRTABLE_API_KEY"]
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
 except:
     st.error("CONFIGURATION REQUISE")
 
-# 4. INTERFACE CENTRÉE
-with st.container():
-    # Champ Sujet
-    sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE...")
-    
-    # Séparateur invisible
-    st.markdown("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
-    
-    # Format et Tonalité côte à côte
-    c1, c2 = st.columns(2)
-    with c1:
-        fmt = st.selectbox("FORMAT", ["REEL", "CARROUSEL", "STORY"])
-    with c2:
-        ton = st.selectbox("TONALITÉ", ["EXPERT", "ARROGANT", "VENTE"])
-    
-    # Exécution
+# 4. INTERFACE CENTRÉE DANS LE CADRE
+# Note : Ces éléments apparaîtront à l'intérieur du cadre défini dans le CSS
+sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE...")
+
+c1, c2 = st.columns(2)
+with c1:
+    fmt = st.selectbox("FORMAT", ["REEL", "CARROUSEL", "STORY"])
+with c2:
+    ton = st.selectbox("TONALITÉ", ["EXPERT", "ARROGANT", "VENTE"])
+
+# Centrage du bouton
+col_b1, col_b2, col_b3 = st.columns([1,1,1])
+with col_b2:
     if st.button("EXECUTE"):
         if sujet:
-            try:
-                table.create({"Sujet": sujet, "Format": fmt, "Ton": ton})
-                st.toast("PROTOCOL SUCCESSFUL", icon='✅')
-            except Exception as e:
-                st.error(f"Erreur de transmission : {e}")
-        else:
-            st.warning("SAISIE REQUISE")
+            table.create({"Sujet": sujet, "Format": fmt, "Ton": ton})
+            st.toast("PROTOCOL SUCCESSFUL", icon='✅')
