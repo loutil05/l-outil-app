@@ -1,72 +1,70 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. CONFIGURATION UNIVERSELLE
+# 1. CONFIGURATION (STABILITÉ MOBILE)
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : IDENTITÉ LUXE & FIX IPHONE
+# 2. INJECTION CSS : L'ARMURE LUXE (ZÉRO BLANC / ZÉRO BUG)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;400&display=swap');
-
-    /* FOND NOIR MAT AVEC GRAIN SUBTIL */
+    /* FOND NOIR ABSOLU TEXTURÉ */
     .stApp {
-        background-color: #020202 !important;
+        background-color: #000000 !important;
         background-image: radial-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px) !important;
         background-size: 20px 20px !important;
-        font-family: 'Inter', sans-serif !important;
     }
     
+    /* SUPPRESSION INTERFACE */
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* TITRE OR MÉTALLIQUE ET HALO (RESTAURÉ) */
+    /* TITRE OR MÉTALLIQUE (IMAGE 2) */
     .brand-header {
         text-align: center;
-        letter-spacing: 18px;
-        font-size: 45px;
+        color: #D4AF37 !important;
+        letter-spacing: 15px;
+        font-size: 42px;
         font-weight: 200;
         text-transform: uppercase;
         margin-top: 40px;
-        background: linear-gradient(to bottom, #FFD700, #D4AF37, #B8860B);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
         text-shadow: 0px 0px 20px rgba(212, 175, 55, 0.4);
     }
 
-    /* LE CADRE CENTRAL PROTOCOL (VERRE FUMÉ MASSIF) */
+    /* LE CADRE CENTRAL (VERRE FUMÉ) */
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
         border: 1px solid rgba(212, 175, 55, 0.2) !important;
         background: rgba(10, 10, 10, 0.9) !important;
-        -webkit-backdrop-filter: blur(30px) !important; /* Fix iPhone */
-        backdrop-filter: blur(30px) !important;
-        padding: 50px !important;
+        -webkit-backdrop-filter: blur(20px) !important; /* Fix iPhone */
+        backdrop-filter: blur(20px) !important;
+        padding: 40px !important;
         border-radius: 4px !important;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 1) !important;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 1);
     }
 
-    /* --- DESTRUCTION DU BLANC SUR TOUS LES APPAREILS --- */
+    /* --- DESTRUCTION RADICALE DU BLANC (PC & MOBILE) --- */
+    /* On cible TOUT : le container, le fond, et l'ombre interne */
     .stTextInput div, .stSelectbox div, [data-baseweb="input"], [data-baseweb="select"], [data-baseweb="base-input"] {
         background-color: transparent !important;
         background: transparent !important;
         border: none !important;
+        box-shadow: none !important;
     }
 
-    /* Plaque de verre poli avec liseré Or (Image 2) */
+    /* On recrée la ligne Or sous les cases (Image 2) */
     .stTextInput > div > div, .stSelectbox > div > div {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border-bottom: 2px solid rgba(212, 175, 55, 0.3) !important;
+        background: rgba(255, 255, 255, 0.02) !important;
+        border-bottom: 2px solid rgba(212, 175, 55, 0.4) !important;
         border-radius: 0px !important;
         height: 50px !important;
     }
 
-    /* Fix pour le texte tapé */
-    input {
+    /* Force le texte en blanc pour iPhone/Safari */
+    input, .stSelectbox span {
         color: white !important;
-        background-color: transparent !important;
-        -webkit-text-fill-color: white !important; /* Fix Safari iPhone */
+        -webkit-text-fill-color: white !important;
+        font-weight: 200 !important;
     }
 
-    /* BOUTON INITIALISER (STYLE LUXE) */
+    /* BOUTON INITIALISER (CENTRAGE ET STYLE) */
     div.stButton {
         display: flex;
         justify-content: center;
@@ -83,11 +81,6 @@ st.markdown("""
         letter-spacing: 10px;
         font-weight: 200;
         text-transform: uppercase;
-        transition: 0.5s all;
-    }
-    div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.08) !important;
-        box-shadow: 0px 0px 40px rgba(212, 175, 55, 0.25);
     }
 </style>
 
@@ -105,7 +98,7 @@ except:
 
 # 4. INTERFACE
 with st.container():
-    sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE STRATÉGIQUE...")
+    sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE...")
     
     col1, col2 = st.columns(2)
     with col1:
