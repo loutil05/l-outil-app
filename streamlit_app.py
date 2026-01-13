@@ -1,93 +1,111 @@
 import streamlit as st
 from pyairtable import Table
 
-# --- CONFIGURATION LUXE ---
-st.set_page_config(page_title="L'OUTIL - Administration", layout="wide")
+# 1. CONFIGURATION
+st.set_page_config(page_title="L'OUTIL", layout="wide")
 
-# --- STYLE CSS "SILENT LUXURY" ---
+# 2. DESIGN EXACT (LIGNES FINES, GLASSMORPHISM, OR)
 st.markdown("""
     <style>
-    .stApp { background-color: #050505 !important; }
+    /* Fond sombre avec dégradé subtil */
+    .stApp {
+        background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%) !important;
+    }
     
-    /* Menu Latéral (Sidebar) */
-    [data-testid="stSidebar"] {
-        background-color: #0a0a0a !important;
-        border-right: 1px solid #262626;
-    }
-
-    /* Titre Or Brossé */
-    .brand-title {
-        font-family: 'Playfair Display', serif;
-        background: linear-gradient(135deg, #a67c00 0%, #ffbf00 50%, #a67c00 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 45px;
-        font-weight: 700;
+    /* Titre Central Style 'Protocol' */
+    .protocol-title {
+        font-family: 'Inter', sans-serif;
+        color: #D4AF37;
         text-align: center;
-        letter-spacing: 2px;
-        margin-bottom: 30px;
+        letter-spacing: 12px;
+        font-size: 50px;
+        font-weight: 200;
+        margin-top: 50px;
+        text-shadow: 0px 0px 15px rgba(212, 175, 55, 0.3);
+    }
+    
+    .subtitle {
+        color: rgba(212, 175, 55, 0.6);
+        text-align: center;
+        letter-spacing: 4px;
+        font-size: 12px;
+        margin-bottom: 60px;
     }
 
-    /* Bouton Exécuter Premium */
-    div.stButton > button {
-        background: linear-gradient(135deg, #8a6d3b 0%, #c5a059 100%) !important;
-        color: #000 !important;
+    /* Cadre Central Glassmorphism */
+    .main-box {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        padding: 40px;
+        border-radius: 2px;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Inputs style ligne fine */
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
+        background-color: transparent !important;
         border: none !important;
-        border-radius: 4px !important;
-        font-weight: bold !important;
-        height: 50px;
-        width: 100%;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    /* Inputs Glassmorphism */
-    div.stTextInput > div > div > input, .stSelectbox div[data-baseweb="select"] {
-        background-color: rgba(255,255,255,0.03) !important;
-        border: 1px solid #262626 !important;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.4) !important;
+        border-radius: 0px !important;
         color: white !important;
+        padding-left: 0px !important;
     }
 
+    /* Bouton 'EXECUTE' Minimaliste */
+    div.stButton > button {
+        background-color: transparent !important;
+        color: #D4AF37 !important;
+        border: 1px solid #D4AF37 !important;
+        border-radius: 2px !important;
+        width: 100%;
+        height: 50px;
+        letter-spacing: 5px;
+        font-weight: 300;
+        margin-top: 40px;
+        transition: 0.5s;
+    }
+    
+    div.stButton > button:hover {
+        background-color: rgba(212, 175, 55, 0.1) !important;
+        box-shadow: 0px 0px 20px rgba(212, 175, 55, 0.2);
+    }
+
+    /* Masquer les éléments Streamlit */
     #MainMenu, footer, header {visibility: hidden;}
     </style>
+    
+    <div class="protocol-title">L'OUTIL</div>
+    <div class="subtitle">AI COMMAND PROTOCOL</div>
 """, unsafe_allow_html=True)
 
-# --- NAVIGATION ---
-with st.sidebar:
-    st.markdown('<div class="brand-title">L\'OUTIL</div>', unsafe_allow_html=True)
-    page = st.radio("NAVIGATION", ["⚙️ SYSTÈME DE COMMANDE", "💎 GALERIE PRIVÉE"])
-    st.info("Compte Premium Actif")
-
-# --- LOGIQUE AIRTABLE ---
+# 3. CONNEXION AIRTABLE (CORRECTION DU BUG 404)
 try:
-    # Rappel : AIRTABLE_BASE_ID doit être uniquement 'appRGyGPT4atazrpx'
+    # IMPORTANT : AIRTABLE_BASE_ID doit être "appRGyGPT4atazrpx" uniquement
     api_key = st.secrets["AIRTABLE_API_KEY"]
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
 except:
-    st.error("ERREUR DE CONFIGURATION SECRETS")
+    st.error("CONFIGURATION REQUISE")
 
-# --- PAGE 1 : COMMANDE ---
-if page == "⚙️ SYSTÈME DE COMMANDE":
-    st.markdown("<h2 style='color: white; font-weight: 200;'>NOUVEL ORDRE DE GÉNÉRATION</h2>", unsafe_allow_html=True)
+# 4. INTERFACE
+with st.container():
+    st.markdown('<div class="main-box">', unsafe_allow_html=True)
     
-    with st.container():
-        sujet = st.text_input("VOTRE PROCHAINE VIRALITÉ", placeholder="Ex: Pourquoi l'IA va dominer 2026...")
-        c1, c2 = st.columns(2)
-        with c1:
-            format_type = st.selectbox("FORMAT", ["REEL VIRAL", "CARROUSEL LUXE", "STORY"])
-        with c2:
-            ton = st.selectbox("ANGLE", ["EXPERT", "ARROGANT", "VENDEUR"])
-        
-        if st.button("LANCER LA GÉNÉRATION"):
-            if sujet:
-                table.create({"Sujet": sujet, "Format": format_type, "Ton": ton})
-                st.toast("Ordre transmis avec succès.", icon='✅')
-            else:
-                st.warning("Veuillez saisir un sujet.")
+    sujet = st.text_input("SUJET", placeholder="Entrez le paramètre...")
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        fmt = st.selectbox("FORMAT", ["REEL", "CARROUSEL", "STORY"])
+    with c2:
+        ton = st.selectbox("TONALITÉ", ["EXPERT", "ARROGANT", "VENTE"])
 
-# --- PAGE 2 : GALERIE ---
-elif page == "💎 GALERIE PRIVÉE":
-    st.markdown("<h2 style='color: white; font-weight: 200;'>VOS CRÉATIONS VALIDÉES</h2>", unsafe_allow_html=True)
-    # Remplacer par ton lien de Gallery View Airtable partagée
-    st.components.v1.iframe("https://airtable.com/embed/appRGyGPT4atazrpx/shrXXXXXXXXXXXXXX", height=800, scrolling=True)
+    if st.button("EXECUTE"):
+        if sujet:
+            with st.spinner("Processing..."):
+                # Envoi propre sans URL parasite
+                table.create({"Sujet": sujet, "Format": fmt, "Ton": ton})
+                st.success("COMMAND EXECUTED.")
+        else:
+            st.warning("INPUT REQUIRED.")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
