@@ -1,5 +1,3 @@
-Python
-
 import streamlit as st
 from pyairtable import Table
 
