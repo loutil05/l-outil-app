@@ -1,63 +1,76 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. ARCHITECTURE DE BASE
+# 1. CONFIGURATION UNIVERSELLE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : LUXE ÉPURÉ & FIX IPHONE (ZÉRO ERREUR)
+# 2. INJECTION CSS : IDENTITÉ LUXE & FIX IPHONE
 st.markdown("""
 <style>
-    /* 1. FOND NOIR MAT TEXTURÉ (PC & MOBILE) */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;400&display=swap');
+
+    /* FOND NOIR MAT AVEC GRAIN SUBTIL */
     .stApp {
-        background-color: #000000 !important;
-        background-image: radial-gradient(#1a1a1a 1px, transparent 1px) !important;
+        background-color: #020202 !important;
+        background-image: radial-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px) !important;
         background-size: 20px 20px !important;
-        color: white !important;
+        font-family: 'Inter', sans-serif !important;
     }
+    
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* 2. TITRE DORÉ LUMINEUX (Fixé pour iPhone) */
+    /* TITRE OR MÉTALLIQUE ET HALO (RESTAURÉ) */
     .brand-header {
         text-align: center;
-        color: #D4AF37 !important;
-        letter-spacing: 10px;
-        font-size: 32px;
-        font-weight: bold;
+        letter-spacing: 18px;
+        font-size: 45px;
+        font-weight: 200;
         text-transform: uppercase;
-        margin-top: 30px;
-        text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        margin-top: 40px;
+        background: linear-gradient(to bottom, #FFD700, #D4AF37, #B8860B);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 0px 20px rgba(212, 175, 55, 0.4);
     }
 
-    /* 3. LE CADRE CENTRAL (FUMÉ SOMBRE) */
+    /* LE CADRE CENTRAL PROTOCOL (VERRE FUMÉ MASSIF) */
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
         border: 1px solid rgba(212, 175, 55, 0.2) !important;
         background: rgba(10, 10, 10, 0.9) !important;
-        padding: 30px !important;
+        -webkit-backdrop-filter: blur(30px) !important; /* Fix iPhone */
+        backdrop-filter: blur(30px) !important;
+        padding: 50px !important;
         border-radius: 4px !important;
-        margin: 0 auto !important;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 1) !important;
     }
 
-    /* 4. FIX BARRE BLANCHE PC : TRANSPARENCE TOTALE */
-    /* On force chaque couche de l'input à être invisible */
-    .stTextInput div, .stSelectbox div, [data-baseweb="input"], [data-baseweb="select"], input {
+    /* --- DESTRUCTION DU BLANC SUR TOUS LES APPAREILS --- */
+    .stTextInput div, .stSelectbox div, [data-baseweb="input"], [data-baseweb="select"], [data-baseweb="base-input"] {
         background-color: transparent !important;
         background: transparent !important;
         border: none !important;
-        color: white !important;
     }
 
-    /* On recrée la ligne Or sous les cases */
+    /* Plaque de verre poli avec liseré Or (Image 2) */
     .stTextInput > div > div, .stSelectbox > div > div {
-        border-bottom: 2px solid rgba(212, 175, 55, 0.4) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border-bottom: 2px solid rgba(212, 175, 55, 0.3) !important;
         border-radius: 0px !important;
-        background: rgba(255, 255, 255, 0.02) !important;
+        height: 50px !important;
     }
 
-    /* 5. BOUTON : LANCER LA GÉNÉRATION (CENTRÉ) */
+    /* Fix pour le texte tapé */
+    input {
+        color: white !important;
+        background-color: transparent !important;
+        -webkit-text-fill-color: white !important; /* Fix Safari iPhone */
+    }
+
+    /* BOUTON INITIALISER (STYLE LUXE) */
     div.stButton {
         display: flex;
         justify-content: center;
-        margin-top: 30px;
+        margin-top: 40px;
     }
     div.stButton > button {
         background-color: transparent !important;
@@ -65,26 +78,21 @@ st.markdown("""
         border: 1px solid #D4AF37 !important;
         border-radius: 0px !important;
         width: 100% !important;
-        max-width: 280px !important;
-        height: 55px !important;
-        letter-spacing: 4px;
+        max-width: 350px !important;
+        height: 60px !important;
+        letter-spacing: 10px;
+        font-weight: 200;
         text-transform: uppercase;
+        transition: 0.5s all;
     }
     div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.1) !important;
-        border: 1px solid #FFD700 !important;
-    }
-
-    label p {
-        color: rgba(212, 175, 55, 0.8) !important;
-        font-size: 10px !important;
-        letter-spacing: 3px !important;
-        text-transform: uppercase;
+        background-color: rgba(212, 175, 55, 0.08) !important;
+        box-shadow: 0px 0px 40px rgba(212, 175, 55, 0.25);
     }
 </style>
 
 <div class="brand-header">L'OUTIL</div>
-<p style="text-align:center; color:rgba(212,175,55,0.4); letter-spacing:5px; font-size:9px; text-transform:uppercase; margin-bottom: 30px;">AI Command Protocol</p>
+<p style="text-align:center; color:rgba(212,175,55,0.4); letter-spacing:8px; font-size:10px; text-transform:uppercase; margin-bottom: 40px;">AI Command Protocol</p>
 """, unsafe_allow_html=True)
 
 # 3. LOGIQUE TECHNIQUE
@@ -92,12 +100,12 @@ try:
     api_key = st.secrets["AIRTABLE_API_KEY"]
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
-except Exception:
-    st.error("Liaison technique en attente.")
+except:
+    st.error("Protocol Connection Required.")
 
 # 4. INTERFACE
 with st.container():
-    sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE...")
+    sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE STRATÉGIQUE...")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -105,12 +113,12 @@ with st.container():
     with col2:
         ton = st.selectbox("TONALITÉ", ["EXPERT", "ARROGANT", "VENTE"])
     
-    if st.button("LANCER LA GÉNÉRATION"):
+    if st.button("INITIALISER LE PROTOCOLE"):
         if sujet:
             try:
                 table.create({"Sujet": sujet, "Format": fmt, "Ton": ton})
-                st.toast("PROTOCOLE LANCÉ", icon='✅')
-            except Exception:
-                st.error("Erreur de connexion Airtable.")
+                st.toast("PROTOCOL EXECUTED", icon='✅')
+            except:
+                st.error("Airtable Link Error")
         else:
-            st.warning("SAISIE REQUISE")
+            st.warning("INPUT REQUIRED")
