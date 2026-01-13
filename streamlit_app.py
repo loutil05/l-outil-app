@@ -1,19 +1,19 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. CONFIGURATION DE LA PAGE
+# 1. CONFIGURATION
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : EFFET CRISTAL & OR (VERSION FINALE)
+# 2. INJECTION CSS "TOTAL OVERRIDE" (POUR EFFACER LE BLANC)
 st.markdown("""
 <style>
-    /* Fond Noir Profond avec dégradé radial pour la profondeur */
+    /* 1. Fond et Suppression Globale */
     .stApp {
         background: radial-gradient(circle at center, #1a1a1a 0%, #050505 100%) !important;
     }
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* TITRE SIGNATURE OR (IMAGE 2) */
+    /* 2. TITRE SIGNATURE OR */
     .brand-header {
         color: #D4AF37 !important;
         text-align: center;
@@ -25,59 +25,61 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
 
-    /* LE CADRE "PROTOCOL" CENTRAL */
+    /* 3. LE CADRE CENTRAL */
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
         border: 1px solid rgba(212, 175, 55, 0.1) !important;
         background: rgba(255, 255, 255, 0.01) !important;
-        backdrop-filter: blur(25px) !important;
+        backdrop-filter: blur(20px) !important;
         padding: 60px !important;
         border-radius: 4px !important;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
     }
 
-    /* --- EFFET "MORCEAU DE VERRE" SUR LES CASES --- */
-    /* On cible les éléments internes pour supprimer les styles standard */
-    div[data-baseweb="input"], div[data-baseweb="select"] {
-        background: rgba(255, 255, 255, 0.03) !important;
-        backdrop-filter: blur(15px) !important; /* L'effet verre poli */
+    /* --- LA MÉTHODE NUCLÉAIRE POUR LE VERRE --- */
+    
+    /* On force TOUT le contenant à être transparent pour tuer le blanc */
+    .stTextInput > div, .stSelectbox > div, div[data-baseweb="input"], div[data-baseweb="select"] {
+        background-color: transparent !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    /* On crée la plaque de verre sur la couche d'interaction */
+    .stTextInput > div > div, .stSelectbox > div > div {
+        background: rgba(255, 255, 255, 0.04) !important;
+        backdrop-filter: blur(15px) !important;
         
-        /* Arêtes spéculaires : reflet de lumière sur le bord supérieur */
-        border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+        /* Arêtes de cristal (Reflets Image 2) */
+        border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
         border-bottom: 1px solid rgba(212, 175, 55, 0.3) !important;
-        border-right: 1px solid rgba(212, 175, 55, 0.15) !important;
+        border-right: 1px solid rgba(212, 175, 55, 0.1) !important;
         
         border-radius: 2px !important;
-        padding: 5px !important;
-        transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1) !important;
+        color: white !important;
     }
 
-    /* Texte & Placeholder */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
-        background-color: transparent !important;
+    /* Suppression du gris au survol que Streamlit ajoute */
+    .stTextInput > div > div:hover, .stSelectbox > div > div:hover {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-bottom: 1px solid #D4AF37 !important;
+    }
+
+    /* On force le texte à blanc et on enlève les bordures focus bleues */
+    input {
         color: white !important;
-        font-weight: 200 !important;
-        border: none !important;
-        font-size: 15px !important;
+        background: transparent !important;
     }
     
-    /* Illumination au Focus (La plaque s'active) */
-    div[data-baseweb="input"]:focus-within, div[data-baseweb="select"]:focus-within {
-        background: rgba(255, 255, 255, 0.08) !important;
-        border-bottom: 2px solid #D4AF37 !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
-    }
-
-    /* Labels dorés discrets */
+    /* Labels dorés */
     label p {
         color: rgba(212, 175, 55, 0.7) !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         letter-spacing: 3px !important;
         text-transform: uppercase;
         margin-bottom: 12px !important;
     }
 
-    /* BOUTON EXECUTE (IMAGE 2) */
+    /* BOUTON EXECUTE */
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
@@ -89,12 +91,6 @@ st.markdown("""
         font-weight: 100;
         margin-top: 35px;
         text-transform: uppercase;
-        transition: 0.6s all;
-    }
-    div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.08) !important;
-        box-shadow: 0px 0px 40px rgba(212, 175, 55, 0.2);
-        border-color: #FFD700 !important;
     }
 </style>
 
@@ -104,14 +100,13 @@ st.markdown("""
 
 # 3. LOGIQUE TECHNIQUE
 try:
-    # Airtable Base ID : appRGyGPT4atazrpx
     api_key = st.secrets["AIRTABLE_API_KEY"]
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
-except Exception:
-    st.error("Protocol Configuration Required.")
+except:
+    st.error("Configuration Requise.")
 
-# 4. INTERFACE DE COMMANDE
+# 4. INTERFACE
 with st.container():
     sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE STRATÉGIQUE...")
     
