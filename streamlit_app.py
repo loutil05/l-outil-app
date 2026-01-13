@@ -1,108 +1,96 @@
 import streamlit as st
-from pyairtable import Table
 
 # 1. CONFIGURATION DE LA PAGE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. DESIGN PROPRIÉTAIRE (OR & GLASS)
+# 2. DESIGN HAUTE COUTURE (IMAGE 2)
 st.markdown("""
     <style>
-    /* Fond noir et police épurée */
-    .stApp {
-        background-color: #050505 !important;
-        font-family: 'Inter', sans-serif;
-    }
+    /* Fond Noir Pur */
+    .stApp { background-color: #050505 !important; }
     
-    /* Titre OR avec espacement */
-    .brand-header {
+    /* Titre OR 'AI COMMAND PROTOCOL' */
+    .protocol-header {
+        font-family: 'Inter', sans-serif;
         color: #D4AF37;
         text-align: center;
-        letter-spacing: 15px;
+        letter-spacing: 12px;
         font-size: 35px;
         font-weight: 200;
-        margin-top: 50px;
-        margin-bottom: 5px;
+        margin-top: 60px;
+        text-transform: uppercase;
     }
-    .brand-sub {
+    .protocol-sub {
         color: rgba(212, 175, 55, 0.4);
         text-align: center;
         letter-spacing: 5px;
-        font-size: 10px;
-        margin-bottom: 40px;
+        font-size: 9px;
+        margin-bottom: 50px;
+        text-transform: uppercase;
     }
 
-    /* Conteneur Central (L'effet de l'image 2) */
-    .main-interface {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(212, 175, 55, 0.15);
-        padding: 40px;
-        border-radius: 4px;
-        backdrop-filter: blur(10px);
+    /* Boîte Centrale Glassmorphism (Image 2) */
+    .stContainer {
+        background: rgba(255, 255, 255, 0.01) !important;
+        border: 1px solid rgba(212, 175, 55, 0.1) !important;
+        padding: 50px !important;
+        border-radius: 2px !important;
+        box-shadow: 0px 10px 50px rgba(0,0,0,0.5);
     }
 
-    /* Inputs transparents avec bordure basse */
-    .stTextInput > div > div > input, .stSelectbox div[data-baseweb="select"] {
-        background-color: rgba(0, 0, 0, 0.3) !important;
+    /* Inputs Minimalistes (Lignes Or) */
+    label { color: rgba(212, 175, 55, 0.7) !important; font-size: 10px !important; letter-spacing: 2px !important; }
+    
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
+        background-color: transparent !important;
         border: none !important;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.3) !important;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2) !important;
         color: white !important;
         border-radius: 0px !important;
+        font-size: 14px !important;
     }
 
-    /* Bouton EXECUTE Rectangulaire */
+    /* Bouton EXECUTE - Laiton Brossé */
     div.stButton > button {
         background-color: transparent !important;
         color: #D4AF37 !important;
         border: 1px solid #D4AF37 !important;
         border-radius: 0px !important;
         width: 100% !important;
-        height: 50px !important;
+        height: 55px !important;
+        letter-spacing: 6px;
+        font-weight: 200;
+        margin-top: 40px;
+        transition: 0.5s all;
         text-transform: uppercase;
-        letter-spacing: 4px;
-        font-weight: 300;
-        margin-top: 20px;
-        transition: 0.4s;
     }
     div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.1) !important;
-        box-shadow: 0px 0px 20px rgba(212, 175, 55, 0.1);
+        background-color: rgba(212, 175, 55, 0.05) !important;
+        border: 1px solid #FFD700 !important;
+        box-shadow: 0px 0px 20px rgba(212, 175, 55, 0.2);
     }
 
-    /* Suppression des éléments parasites */
+    /* Masquer le surplus */
     #MainMenu, footer, header {visibility: hidden;}
+    [data-testid="stHeader"] {background: rgba(0,0,0,0);}
     </style>
     
-    <div class="brand-header">L'OUTIL</div>
-    <div class="brand-sub">AI COMMAND PROTOCOL</div>
+    <div class="protocol-header">L'OUTIL</div>
+    <div class="protocol-sub">AI COMMAND PROTOCOL</div>
 """, unsafe_allow_html=True)
 
-# 3. CONNEXION AIRTABLE
-try:
-    # Rappel : AIRTABLE_BASE_ID doit être UNIQUEMENT "appRGyGPT4atazrpx"
-    api_key = st.secrets["AIRTABLE_API_KEY"]
-    base_id = st.secrets["AIRTABLE_BASE_ID"]
-    table = Table(api_key, base_id, "Table 1")
-except:
-    st.error("ERREUR : Vérifie tes Secrets Streamlit.")
-
-# 4. INTERFACE DE COMMANDE
+# 3. INTERFACE CENTRÉE
 with st.container():
-    st.markdown('<div class="main-interface">', unsafe_allow_html=True)
+    # Sujet sur une ligne
+    sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE...")
     
-    sujet = st.text_input("SUJET", placeholder="Saisir l'ordre...")
-    
-    c1, c2 = st.columns(2)
-    with c1:
+    # Format et Tonalité sur la même ligne
+    col1, col2 = st.columns(2)
+    with col1:
         fmt = st.selectbox("FORMAT", ["REEL", "CARROUSEL", "STORY"])
-    with c2:
+    with col2:
         ton = st.selectbox("TONALITÉ", ["EXPERT", "ARROGANT", "VENTE"])
     
+    # Bouton d'exécution
     if st.button("EXECUTE"):
-        if sujet:
-            with st.spinner("Transmission..."):
-                table.create({"Sujet": sujet, "Format": fmt, "Ton": ton})
-                st.success("COMMAND EXECUTED")
-        else:
-            st.warning("SAISIE REQUISE")
-            
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.write("Ordre transmis...")
