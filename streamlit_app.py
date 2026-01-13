@@ -1,15 +1,15 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. SETUP STABILITÉ MOBILE
+# 1. SETUP TECHNIQUE (CENTRAGE NATIF)
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : CENTRAGE ABSOLU & DESIGN BULLES
+# 2. INJECTION CSS : SYMÉTRIE TOTALE & GLOW DORÉ
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&display=swap');
 
-    /* 1. FOND ET CENTRAGE DE L'APPLICATION */
+    /* FOND NOIR MAT & ALIGNEMENT VERTICAL/HORIZONTAL */
     .stApp {
         background-color: #020202 !important;
         background-image: radial-gradient(rgba(212, 175, 55, 0.05) 1.5px, transparent 0) !important;
@@ -17,54 +17,57 @@ st.markdown("""
         font-family: 'Inter', sans-serif !important;
         display: flex !important;
         justify-content: center !important;
+        align-items: center !important; /* Centrage vertical total */
     }
     
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* 2. LOGO AVEC HALO (CENTRAGE FORCÉ) */
+    /* LOGO AVEC HALO DORÉ INTENSE (RESTAURÉ) */
     .brand-header {
         text-align: center !important;
         letter-spacing: 15px;
         font-size: clamp(30px, 10vw, 48px);
         font-weight: 200;
         text-transform: uppercase;
-        margin-top: 50px;
+        margin-bottom: 5px;
         background: linear-gradient(to bottom, #FFD700, #D4AF37);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-shadow: 
             0 0 10px rgba(255, 215, 0, 0.7),
-            0 0 20px rgba(212, 175, 55, 0.5);
+            0 0 20px rgba(212, 175, 55, 0.5),
+            0 0 40px rgba(212, 175, 55, 0.3);
         width: 100% !important;
     }
 
-    /* 3. LE CADRE CENTRAL (SYMÉTRIE TOTALE) */
+    /* LE CADRE CENTRAL (VERRE FUMÉ SYMÉTRIQUE) */
     [data-testid="stVerticalBlock"] {
         align-items: center !important;
+        gap: 0px !important;
     }
 
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
-        border: 1px solid rgba(212, 175, 55, 0.15) !important;
-        background: rgba(10, 10, 10, 0.85) !important;
+        border: 1px solid rgba(212, 175, 55, 0.2) !important;
+        background: rgba(10, 10, 10, 0.9) !important;
         -webkit-backdrop-filter: blur(30px) !important;
         backdrop-filter: blur(30px) !important;
         padding: clamp(30px, 5vw, 60px) !important;
         border-radius: 20px !important;
-        margin: 0 auto !important; /* Centrage horizontal sur PC */
-        width: 95% !important; /* Adaptabilité iPhone */
+        margin: 20px auto !important; /* Centrage horizontal forcé */
+        width: 100% !important;
         max-width: 650px !important;
         box-shadow: 0 40px 100px rgba(0, 0, 0, 1);
     }
 
-    /* --- MODE BULLES (PILLS) --- */
+    /* --- MODE BULLES GOLD --- */
     .stTextInput div, .stSelectbox div, [data-baseweb="input"], [data-baseweb="select"] {
         background-color: transparent !important;
         border: none !important;
     }
 
     .stTextInput > div > div, .stSelectbox > div > div {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(212, 175, 55, 0.3) !important;
+        background: rgba(255, 255, 255, 0.02) !important;
+        border: 1px solid rgba(212, 175, 55, 0.4) !important;
         border-radius: 50px !important;
         height: 55px !important;
         transition: 0.4s all ease;
@@ -79,7 +82,13 @@ st.markdown("""
         font-size: 15px !important;
     }
 
-    /* 4. BOUTON (LA BARRE BULLE CENTRÉE) */
+    /* Placeholder stylisé */
+    input::placeholder {
+        color: rgba(212, 175, 55, 0.3) !important;
+        -webkit-text-fill-color: rgba(212, 175, 55, 0.3) !important;
+    }
+
+    /* BOUTON (BARRE BULLE CENTRÉE) */
     div.stButton {
         display: flex !important;
         justify-content: center !important;
@@ -92,26 +101,28 @@ st.markdown("""
         border: 1px solid #D4AF37 !important;
         border-radius: 50px !important;
         width: 100% !important;
-        max-width: 350px !important;
+        max-width: 380px !important;
         height: 65px !important;
         letter-spacing: 8px;
         text-transform: uppercase;
+        font-weight: 200;
         transition: 0.5s all ease;
     }
     div.stButton > button:hover {
-        background-color: #D4AF37 !important;
-        color: black !important;
-        box-shadow: 0px 0px 30px rgba(212, 175, 55, 0.4);
+        background-color: rgba(212, 175, 55, 0.1) !important;
+        box-shadow: 0px 0px 40px rgba(212, 175, 55, 0.4);
+        border-color: #FFD700 !important;
     }
 
-    /* LABELS CENTRÉS */
+    /* LABELS DISCRETS */
     label p {
-        color: rgba(212, 175, 55, 0.8) !important;
+        color: rgba(212, 175, 55, 0.6) !important;
         font-size: 10px !important;
         letter-spacing: 4px !important;
         text-transform: uppercase;
         text-align: center !important;
         width: 100%;
+        margin-bottom: 12px !important;
     }
 </style>
 
@@ -125,11 +136,12 @@ try:
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
 except:
-    st.error("Protocol Error.")
+    st.error("Protocol Connection Lost.")
 
 # 4. INTERFACE
 with st.container():
-    sujet = st.text_input("SUJET", placeholder="DÉFINIR LE PARAMÈTRE...")
+    # Mise à jour de la phrase ici
+    sujet = st.text_input("INTENTION", placeholder="QUE SOUHAITES-TU CRÉER ?")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -143,6 +155,6 @@ with st.container():
                 table.create({"Sujet": sujet, "Format": fmt, "Ton": ton})
                 st.toast("PROTOCOL EXECUTED", icon='✅')
             except:
-                st.error("Airtable Link Error")
+                st.error("Airtable Sync Error")
         else:
             st.warning("INPUT REQUIRED")
