@@ -1,76 +1,93 @@
 import streamlit as st
 from pyairtable import Table
-import os
 
-# --- CONFIGURATION STRICTE ---
-st.set_page_config(page_title="L'OUTIL", page_icon="⚡", layout="centered")
+# --- CONFIGURATION LUXE ---
+st.set_page_config(page_title="L'OUTIL - Administration", layout="wide")
 
-# --- LE VRAI DESIGN "L'OUTIL" (NOIR & OR) ---
+# --- STYLE CSS "SILENT LUXURY" ---
 st.markdown("""
     <style>
-    /* Fond Noir Intégral */
-    .stApp {
-        background-color: #000000 !important;
+    .stApp { background-color: #050505 !important; }
+    
+    /* Menu Latéral (Sidebar) */
+    [data-testid="stSidebar"] {
+        background-color: #0a0a0a !important;
+        border-right: 1px solid #262626;
     }
-    /* Titre en Or Massif */
-    .gold-title {
-        color: #D4AF37 !important;
-        font-family: 'Helvetica Neue', sans-serif;
-        font-size: 3.5rem !important;
-        font-weight: 800;
+
+    /* Titre Or Brossé */
+    .brand-title {
+        font-family: 'Playfair Display', serif;
+        background: linear-gradient(135deg, #a67c00 0%, #ffbf00 50%, #a67c00 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 45px;
+        font-weight: 700;
         text-align: center;
-        text-transform: uppercase;
-        margin-bottom: 0px;
-        letter-spacing: -2px;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
     }
-    /* Input design */
-    .stTextInput > div > div > input {
-        background-color: #111 !important;
-        color: white !important;
-        border: 1px solid #D4AF37 !important;
-        border-radius: 0px !important;
-    }
-    /* Bouton Or */
-    .stButton > button {
-        width: 100%;
-        background-color: #D4AF37 !important;
-        color: black !important;
-        font-weight: bold !important;
+
+    /* Bouton Exécuter Premium */
+    div.stButton > button {
+        background: linear-gradient(135deg, #8a6d3b 0%, #c5a059 100%) !important;
+        color: #000 !important;
         border: none !important;
-        border-radius: 0px !important;
-        height: 60px !important;
-        font-size: 1.2rem !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        height: 50px;
+        width: 100%;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
-    /* Masquer les menus Streamlit */
+
+    /* Inputs Glassmorphism */
+    div.stTextInput > div > div > input, .stSelectbox div[data-baseweb="select"] {
+        background-color: rgba(255,255,255,0.03) !important;
+        border: 1px solid #262626 !important;
+        color: white !important;
+    }
+
     #MainMenu, footer, header {visibility: hidden;}
     </style>
-    <h1 class="gold-title">L'OUTIL</h1>
-    <p style='text-align: center; color: #D4AF37; font-weight: 300; margin-top: -10px;'>SYSTÈME DE COMMANDE PRIVÉ</p>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# --- CONNEXION AIRTABLE ---
+# --- NAVIGATION ---
+with st.sidebar:
+    st.markdown('<div class="brand-title">L\'OUTIL</div>', unsafe_allow_html=True)
+    page = st.radio("NAVIGATION", ["⚙️ SYSTÈME DE COMMANDE", "💎 GALERIE PRIVÉE"])
+    st.info("Compte Premium Actif")
+
+# --- LOGIQUE AIRTABLE ---
 try:
+    # Rappel : AIRTABLE_BASE_ID doit être uniquement 'appRGyGPT4atazrpx'
     api_key = st.secrets["AIRTABLE_API_KEY"]
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
-except Exception as e:
-    st.error("En attente de configuration Airtable...")
+except:
+    st.error("ERREUR DE CONFIGURATION SECRETS")
 
-# --- INTERFACE ---
-with st.container():
-    st.write("---")
-    sujet = st.text_input("SUJET DU POST", placeholder="Tape ton idée ici...")
+# --- PAGE 1 : COMMANDE ---
+if page == "⚙️ SYSTÈME DE COMMANDE":
+    st.markdown("<h2 style='color: white; font-weight: 200;'>NOUVEL ORDRE DE GÉNÉRATION</h2>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
-    with col1:
-        format_type = st.selectbox("FORMAT", ["Réel Viral", "Carrousel Stratégique", "Story"])
-    with col2:
-        tonalite = st.selectbox("TONALITÉ", ["Arrogant", "Expert", "Agressif"])
+    with st.container():
+        sujet = st.text_input("VOTRE PROCHAINE VIRALITÉ", placeholder="Ex: Pourquoi l'IA va dominer 2026...")
+        c1, c2 = st.columns(2)
+        with c1:
+            format_type = st.selectbox("FORMAT", ["REEL VIRAL", "CARROUSEL LUXE", "STORY"])
+        with c2:
+            ton = st.selectbox("ANGLE", ["EXPERT", "ARROGANT", "VENDEUR"])
+        
+        if st.button("LANCER LA GÉNÉRATION"):
+            if sujet:
+                table.create({"Sujet": sujet, "Format": format_type, "Ton": ton})
+                st.toast("Ordre transmis avec succès.", icon='✅')
+            else:
+                st.warning("Veuillez saisir un sujet.")
 
-    if st.button("LANCER LA GÉNÉRATION"):
-        if sujet:
-            with st.spinner("Transmission..."):
-                table.create({"Sujet": sujet, "Format": format_type, "Ton": tonalite})
-                st.success("ENVOYÉ DANS AIRTABLE.")
-        else:
-            st.warning("Précise un sujet.")
+# --- PAGE 2 : GALERIE ---
+elif page == "💎 GALERIE PRIVÉE":
+    st.markdown("<h2 style='color: white; font-weight: 200;'>VOS CRÉATIONS VALIDÉES</h2>", unsafe_allow_html=True)
+    # Remplacer par ton lien de Gallery View Airtable partagée
+    st.components.v1.iframe("https://airtable.com/embed/appRGyGPT4atazrpx/shrXXXXXXXXXXXXXX", height=800, scrolling=True)
