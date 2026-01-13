@@ -1,77 +1,65 @@
 import streamlit as st
 from pyairtable import Table
 
-# 1. SETUP UNIVERSEL
+# 1. FORCER LE THÈME SOMBRE DANS LE CODE
 st.set_page_config(page_title="L'OUTIL", layout="centered")
 
-# 2. INJECTION CSS : ANTI-BLANC & COMPATIBILITÉ IPHONE
+# 2. INJECTION CSS : ULTRA-COMPATIBILITÉ ET EFFET VERRE
 st.markdown("""
 <style>
-    /* FOND NOIR MAT TEXTURÉ */
-    .stApp {
-        background-color: #020202 !important;
-        background-image: radial-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px) !important;
-        background-size: 15px 15px !important;
+    /* 1. SUPPRESSION TOTALE DU BLANC (PC & MOBILE) */
+    /* On cible TOUS les composants pour forcer le noir */
+    html, body, .stApp, [data-testid="stAppViewContainer"] {
+        background-color: #000000 !important;
+        background-image: radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.05) 1px, transparent 0) !important;
+        background-size: 25px 25px !important;
+        color: white !important;
     }
     
-    /* Masquer l'interface Streamlit */
     [data-testid="stHeader"], [data-testid="stToolbar"], footer { display: none !important; }
 
-    /* TITRE AVEC EFFET OR ET HALO (IMAGE 2) */
+    /* 2. TITRE DORÉ QUI BRILLE */
     .brand-header {
         text-align: center;
         letter-spacing: 15px;
-        font-size: 38px;
+        font-size: clamp(24px, 8vw, 42px); /* S'adapte à l'iPhone */
         font-weight: 200;
         text-transform: uppercase;
-        margin-top: 30px;
+        margin-top: 20px;
         color: #D4AF37 !important;
-        text-shadow: 0px 0px 20px rgba(212, 175, 55, 0.4);
+        text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
     }
 
-    /* LE CADRE CENTRAL PROTOCOL (VERRE FUMÉ) */
+    /* 3. LE CADRE CENTRAL (VERRE FUMÉ) */
     [data-testid="stVerticalBlock"] > div:nth-child(2) {
-        border: 1px solid rgba(212, 175, 55, 0.15) !important;
-        background: rgba(10, 10, 10, 0.8) !important;
-        -webkit-backdrop-filter: blur(20px) !important; /* Fix iPhone */
+        border: 1px solid rgba(212, 175, 55, 0.2) !important;
+        background: rgba(10, 10, 10, 0.9) !important;
+        -webkit-backdrop-filter: blur(20px) !important; /* Fix iPhone Safari */
         backdrop-filter: blur(20px) !important;
-        padding: 40px !important;
-        border-radius: 2px !important;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 1) !important;
+        padding: clamp(20px, 5vw, 50px) !important;
+        border-radius: 4px !important;
     }
 
-    /* --- DESTRUCTION RADICALE DU BLANC SUR PC ET MOBILE --- */
-    
-    /* Ciblage de tous les fonds possibles de Streamlit pour forcer la transparence */
-    .stTextInput div, .stSelectbox div, [data-baseweb="input"], [data-baseweb="select"], [data-baseweb="base-input"] {
+    /* 4. FIX BARRE BLANCHE : TRANSPARENCE ABSOLUE */
+    /* On détruit le fond blanc des inputs Streamlit */
+    .stTextInput div, .stSelectbox div, [data-baseweb="input"], [data-baseweb="select"], input {
         background-color: transparent !important;
         background: transparent !important;
         border: none !important;
+        color: white !important;
+        -webkit-text-fill-color: white !important;
     }
 
-    /* On recrée la plaque de verre avec le liseré Or sur la couche visible */
+    /* On recrée le liseré Or du verre */
     .stTextInput > div > div, .stSelectbox > div > div {
         background: rgba(255, 255, 255, 0.03) !important;
-        border-bottom: 2px solid rgba(212, 175, 55, 0.3) !important;
+        border-bottom: 2px solid rgba(212, 175, 55, 0.4) !important;
         border-radius: 0px !important;
-        height: 50px !important;
     }
 
-    /* Force le texte en blanc et empêche le remplissage auto blanc des navigateurs */
-    input {
-        color: white !important;
-        background-color: transparent !important;
-        -webkit-text-fill-color: white !important; /* Fix Safari/iPhone */
-    }
-
-    /* STYLE DES MENUS DÉROULANTS */
-    div[role="listbox"], ul[data-baseweb="menu"] {
-        background-color: #0A0A0A !important;
-        border: 1px solid rgba(212, 175, 55, 0.5) !important;
-    }
-
-    /* BOUTON INITIALISER (CENTRAGE ET STYLE) */
+    /* 5. BOUTON : LANCER LA GÉNÉRATION (CENTRÉ) */
     div.stButton {
+        text-align: center;
         display: flex;
         justify-content: center;
         margin-top: 30px;
@@ -82,28 +70,16 @@ st.markdown("""
         border: 1px solid #D4AF37 !important;
         border-radius: 0px !important;
         width: 100% !important;
-        max-width: 350px !important;
+        max-width: 300px !important;
         height: 60px !important;
-        letter-spacing: 5px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
         font-weight: 300;
-        text-transform: uppercase;
-        transition: 0.3s;
-    }
-    div.stButton > button:hover {
-        background-color: rgba(212, 175, 55, 0.05) !important;
-        box-shadow: 0px 0px 30px rgba(212, 175, 55, 0.2);
-    }
-
-    label p {
-        color: rgba(212, 175, 55, 0.7) !important;
-        font-size: 10px !important;
-        letter-spacing: 3px !important;
-        text-transform: uppercase;
     }
 </style>
 
 <div class="brand-header">L'OUTIL</div>
-<p style="text-align:center; color:rgba(212,175,55,0.4); letter-spacing:8px; font-size:9px; text-transform:uppercase; margin-bottom: 30px;">AI Command Protocol</p>
+<p style="text-align:center; color:rgba(212,175,55,0.4); letter-spacing:5px; font-size:10px; text-transform:uppercase; margin-bottom: 30px;">AI Command Protocol</p>
 """, unsafe_allow_html=True)
 
 # 3. LOGIQUE TECHNIQUE
@@ -112,7 +88,7 @@ try:
     base_id = st.secrets["AIRTABLE_BASE_ID"]
     table = Table(api_key, base_id, "Table 1")
 except:
-    st.error("Protocol Connection Required.")
+    st.error("Liaison technique requise.")
 
 # 4. INTERFACE
 with st.container():
@@ -124,18 +100,12 @@ with st.container():
     with col2:
         ton = st.selectbox("TONALITÉ", ["EXPERT", "ARROGANT", "VENTE"])
     
-    if st.button("INITIALISER LE PROTOCOLE"):
+    if st.button("LANCER LA GÉNÉRATION"):
         if sujet:
             try:
                 table.create({"Sujet": sujet, "Format": fmt, "Ton": ton})
-                st.toast("PROTOCOL EXECUTED", icon='✅')
+                st.toast("PROTOCOLE LANCÉ", icon='✅')
             except:
-                st.error("Liaison Airtable interrompue")
+                st.error("Erreur Airtable")
         else:
             st.warning("SAISIE REQUISE")
-
-st.markdown("""
-    <p style="text-align:center; color:rgba(212,175,55,0.2); font-size:8px; margin-top:50px;">
-        Optimisé pour Safari et Chrome. Si vous êtes sur Instagram, ouvrez dans le navigateur du téléphone.
-    </p>
-""", unsafe_allow_html=True)
